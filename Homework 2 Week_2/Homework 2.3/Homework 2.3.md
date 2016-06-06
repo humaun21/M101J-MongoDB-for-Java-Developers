@@ -1,4 +1,4 @@
-Homework: Homework 2.3
+#Homework: Homework 2.3
 
 Write a program in the language of your choice that will remove the grade of type "homework" with the lowest score for each student from the dataset in the handout. Since each document is one grade, it should remove one document per student. This will use the same data set as the last problem, but if you don't have it, you can download and re-import.
 

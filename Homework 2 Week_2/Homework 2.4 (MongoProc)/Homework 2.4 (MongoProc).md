@@ -1,45 +1,71 @@
-Homework: Homework 2.3
+#Homework: Homework 2.4 (MongoProc)
 
-Write a program in the language of your choice that will remove the grade of type "homework" with the lowest score for each student from the dataset in the handout. Since each document is one grade, it should remove one document per student. This will use the same data set as the last problem, but if you don't have it, you can download and re-import.
+This is a mongoProc problem. If you have any difficulty using MongoProc, here are Two video lectures showing how to set it up.
 
-The dataset contains 4 scores each for 200 students.
+Download Mongoproc clients from here if you haven't done so, yet.
 
-First, letâs confirm your data is intact; the number of documents should be 800.
+Also, download the handout from the Download Handout link above, and unpack.
 
-use students
-db.grades.count()
+This is the beginning of the blog project with the UI for creating and logging in blog authors. You will not yet be building functionality for displaying posts. Don't worry, that will come later.
 
-Hint/spoiler: If you select homework grade-documents, sort by student and then by score, you can iterate through and find the lowest score for each student by noticing a change in student id. As you notice that change of student_id, remove the document.
+In the handout is a pom.xml file that describes the project. If you are using IntelliJ, you can import the blog project using this file.
 
-To confirm you are on the right track, here are some queries to run after you process the data and put it into the grades collection:
+The project roughly follows the model/view/controller paradigm. BlogController.java is the controller and the model. The templates comprise the view. Here is a description of the directories and files.
 
-Let us count the number of grades we have:
+/src/main/java/course - contains source code
+/src/main/resources/freemarker - contains templates
+run.sh - the mvn command that starts it running if you don't want to use an IDE
 
-db.grades.count()
+If everything is working properly, you should be able to start the blog by typing either:
 
-The result should be 600. Now let us find the student who holds the 101st best grade across all grades:
+mvn compile exec:java -Dexec.mainClass=course.BlogController
 
-db.grades.find().sort( { 'score' : -1 } ).skip( 100 ).limit( 1 )
+or:
 
-The correct result will be:
+bash run.sh
 
-{ "_id" : ObjectId("50906d7fa3c412bb040eb709"), "student_id" : 100, "type" : "homework", "score" : 88.50425479139126 }
+If you goto http://localhost:8082 , you should see a message, this is a placeholder for the blog
 
-Now let us sort the students by student_id, type, and score, and then see what the top five docs are:
+Here are some URLs that must work when you are done.
 
-db.grades.find( { }, { 'student_id' : 1, 'type' : 1, 'score' : 1, '_id' : 0 } ).sort( { 'student_id' : 1, 'score' : 1, } ).limit( 5 )
+http://localhost:8082/signup
+http://localhost:8082/login
+http://localhost:8082/logout
 
-The result set should be:
+When you login or sign-up, the blog will redirect to:
 
-{ "student_id" : 0, "type" : "quiz", "score" : 31.95004496742112 }
-{ "student_id" : 0, "type" : "exam", "score" : 54.6535436362647 }
-{ "student_id" : 0, "type" : "homework", "score" : 63.98402553675503 }
-{ "student_id" : 1, "type" : "homework", "score" : 44.31667452616328 }
-{ "student_id" : 1, "type" : "exam", "score" : 74.20010837299897 }
+http://localhost:8082/welcome
 
-To verify that you have completed this task correctly, provide the identity of the student with the highest average in the class with following query that uses the aggregation framework. The answer will appear in the _id field of the resulting document.
+and that must work properly, welcoming the user by username.
 
-db.grades.aggregate( { '$group' : { '_id' : '$student_id', 'average' : { $avg : '$score' } } }, { '$sort' : { 'average' : -1 } }, { '$limit' : 1 } )
+We have removed four Java statements from UserDAO and marked the areas where you need to work with XXX. You should not need to touch any other code. The java statements that you are going to add will add a new user upon sign-up and validate a login by retrieving the right user document.
 
-Enter the student ID below. Please enter just the number, with no spaces, commas or other characters.
-#The answer is: 54
+The blog stores its data in the blog database in two collections, users and sessions. Here are two example docs for a username 'erlichson' with password 'fubar'. You can insert these specific documents if you like, but you shouldn't need to.
+
+> db.users.find()
+{ "_id" : "erlichson", "password" : "VH9IFu+/vUNSKTzZsFZEOsK1,-1924261330" }
+>
+> db.sessions.find()
+{ "_id" : "AN4M7warH+fdKOszU8qnd2Hmfn8JZFFZ9sff4zcPRpw=", "username" : "erlichson" }
+>
+
+Once you have the the project working, the following steps should work:
+
+    go to http://localhost:8082/signup
+    create a user
+
+It should redirect you to the welcome page and say welcome username, where username is the user you signed up with. Now:
+
+    Goto http://localhost:8082/logout
+    Now login http://localhost:8082/login.
+
+
+Ok, now it's time to validate that you got it all working.
+
+From the top of this page, there was one additional program that should have been downloaded: mongoProc.
+
+With it, you can test your code and look at the Feedback section. When it says "user creation successful" and "user login successful", you can Turn in your assignment.
+
+You will see a message below about your number of submissions, but you must submit this assignment using MongoProc.
+
+Tip: Be sure to go to settings in mongoProc, and point mongod1 to your mongod (probably localhost:27017), and web1 to your web url (probably localhost:8082)
